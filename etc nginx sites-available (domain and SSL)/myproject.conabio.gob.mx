@@ -1,0 +1,29 @@
+#Names a server and declares the listening port
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    include /etc/nginx/snippets/self-signed.conf;
+    include /etc/nginx/snippets/ssl-params.conf;
+
+    server_name myproject.conabio.gob.mx;
+
+    root /var/www/myproject.conabio.gob.mx/public;
+    index index.html index.htm;
+
+    location \ {
+        proxy_pass https://192.168.79.128:3000;
+        include /etc/nginx/proxy_params;
+    }
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name myproject.conabio.gob.mx;
+    return 302 https://$server_name$request_uri;
+
+    location \ {
+        proxy_pass http://192.168.79.128:3000;
+        include /etc/nginx/proxy_params;
+    }
+}
